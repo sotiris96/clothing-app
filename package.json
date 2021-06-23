@@ -11,6 +11,7 @@
     "gh-pages": "^3.2.3",
     "ghp": "^1.6.0",
     "github-download": "^0.5.0",
+    "gulp-rev-all": "https://github.com/Amitesh/gulp-rev-all/tarball/master",
     "node-sass": "^6.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
