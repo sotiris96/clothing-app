@@ -1,0 +1,24 @@
+.collection-page {
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    color: #343434;
+    font-weight: normal;
+    text-shadow: 0 2px white, 0 3px #777;
+    font-family: 'Ultra', sans-serif;   
+    text-shadow: 1.5px 1.5px 0;
+    font-size: 38px;
+    margin: 0 auto 30px;
+  }
+
+  .items {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+
+    & .collection-item {
+      margin-bottom: 30px;
+    }
+  }
+}
