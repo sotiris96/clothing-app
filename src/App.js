@@ -1,5 +1,12 @@
-import React from 'react';
+import React ,{ useEffect }  from 'react';
 import {Route, Switch, Redirect } from 'react-router-dom';
+
+import { createStructuredSelector } from 'reselect';
+
+import { selectCurrentUser } from './redux/user/user-selectors';
+import { selectCollectionsForPreview } from './redux/shop/shop-selectors';
+
+import { checkUserSession } from './redux/user/user-actions';
 
 import HomePage from './pages/homepage/HomePage';
 import ShopPage from './pages/shop/ShopPage';
@@ -7,79 +14,63 @@ import Header from './compononets/header/header';
 import SignInAndSignUpPage from './pages/sign-in-sign-up/sign-in-sign-up';
 import CheckOutPage from './pages/checkout/checkout' ;
 
-import { createUserProfileDocument} from './firebase/firebase.utils'
-import {auth} from './firebase/firebase.utils';
-
 import {connect} from 'react-redux';
-import { setCurrentUser } from './redux/user/user-actions';
+
 
 import './App.css';
+ /* stin periptosi opou kapoios sindethi me to account tou google na aposindethoi   unsubscribeFromAuth = null;*/ 
 
-
-class App extends React.Component {
-
-/* stin periptosi opou kapoios sindethi me to account tou google na aposindethoi */ 
-unsubscribeFromAuth=null
-
+ 
 /* stin periptosi opou kapoios sindethi
-tote pernei ta dedomena meso tis leitourgia snapshot 
+tote pernei ta dedomena meso tis leitourgia snapshot  componentDidMount
 */ 
+  
 
-componentDidMount(){
+  /* stin periptosi opoy kapoios vgei na min meine mesa*/
 
-  const {setCurrentUser}= this.props;
+const App =({ checkUserSession , currentUser }) =>  {
+ 
 
-  this.unsubscribeFromAuth= auth.onAuthStateChanged (async  userAuth => {
+  useEffect(() =>  {
+    /* on component did mount () */
+    checkUserSession()
 
- if (userAuth){
+  },[checkUserSession]);
 
-   const userRef = await createUserProfileDocument(userAuth);
-
-   userRef.onSnapshot ( snapShot => {
-
-    setCurrentUser({
-        id:snapShot.id,
-        ...snapShot.data()
-      });
-    } );
-   
-    
- }
-setCurrentUser( userAuth);
-  });
-}
-/* stin periptosi opoy kapoios vgei na min meine mesa*/ 
-componentWillUnmount(){
-  this.unsubscribeFromAuth();
-}
-
-  render(){
+ 
     return (
       <div>
-        {/* enimerosi tis kefalidas i katastasi tou xristi*/ }
         <Header />
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route path='/shop' component={ShopPage} />
-          <Route  exact path='/checkout' component={CheckOutPage} /> 
-          <Route exact  path='/signin'  render= { () => this.props.currentUser ?
-          (<Redirect to='/'/>)
-          :
-          (<SignInAndSignUpPage/> )  
-          }/>
+          <Route exact path='/checkout' component={CheckOutPage} />
+          <Route
+            exact
+            path='/signin'
+            render={  () =>
+                currentUser ? (
+                <Redirect to='/' />
+              ) : (
+                <SignInAndSignUpPage />
+              )
+            }
+          />
         </Switch>
       </div>
     );
-  }
-
+  
 }
-const mapStateToProps = ({user}) => ({
-  currentUser : user.currentUser
-})
 
-const mapDispatchToProps = dispatch => ({
-  setCurrentUser: user => dispatch (setCurrentUser(user))
-
+const mapStateToProps = createStructuredSelector({
+  //name metavlitis : selector
+  currentUser: selectCurrentUser,
+  collectionsArray: selectCollectionsForPreview
 });
 
-export default  connect (mapStateToProps,mapDispatchToProps)(App);
+const mapDispatchToProps = dispatch =>  ({
+  checkUserSession  : () => dispatch (checkUserSession())
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

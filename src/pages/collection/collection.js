@@ -1,4 +1,4 @@
-import React from 'react';
+import React , {useEffect} from 'react';
 
 import { connect } from 'react-redux';
 
@@ -6,32 +6,29 @@ import CollectionItem from '../../compononets/collection-item/CollectionItem';
 
 import { selectCollection } from '../../redux/shop/shop-selectors';
 
+import { firestore } from '../../firebase/firebase.utils';
 
-import './collection.scss';
+import {CollectionPageContainer,CollectionTitle, CollectionItemsContainer} from './collection-style';
 
-const collectionPages = ({ collection }) => {
 
-const { title, items } = collection; 
+const CollectionsPage = ({ collection }) => {
 
-return(
 
-  <div className='collection-page'> 
-  <h2 className='title'> {title} </h2>
-  <div className='items'> 
-  {
-    items.map(item => <CollectionItem key={item.id} item={item} />)
-  }
-
-    </div>
-  </div>  
-
-);
+  const { title, items } = collection;
+  return (
+    <CollectionPageContainer>
+      <CollectionTitle>{title}</CollectionTitle>
+      <CollectionItemsContainer>
+        {items.map(item => (
+          <CollectionItem key={item.id} item={item} />
+        ))}
+      </CollectionItemsContainer>
+    </CollectionPageContainer>
+  );
 };
 
-const mapStateToProps=(state,ownProps )=> ({
+const mapStateToProps = (state, ownProps) => ({
+  collection: selectCollection(ownProps.match.params.collectionId)(state)
+});
 
-collection : selectCollection(ownProps.match.params.collectionId)(state)
-
-})
-
-export default connect (mapStateToProps)(collectionPages);
+export default connect(mapStateToProps)(CollectionsPage)

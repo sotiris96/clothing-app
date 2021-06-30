@@ -1,20 +1,45 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import { Route } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-import CollectionsOverview from '../../compononets/collections-overview/collections-overview';
-import collectionPages from '../collection/collection';
 
- const  ShopPage = ({ match })=>{
+import { fetchCollectionsStart} from '../../redux/shop/shop-actions';
+
+
+import CollectionsOverviewContainer from '../../compononets/collections-overview/collections-overview-container';
+
+import CollectionPageContainer from '../collection/collection-container';
+
+
+
+
+const ShopPage = ({ fetchCollectionsStart, match}) =>   {
+
+  useEffect(() => {
+    fetchCollectionsStart();
+    /* gia na min kanei sinexos render opote kalo tin selida shop tin vazo ston pinaka */
+  } ,[fetchCollectionsStart]);
+  
     return (
-
       <div className='shop-page'>
-      
-      <Route  exact path={`${match.path}`} component= {CollectionsOverview} /> 
-      <Route  path={`${match.path}/:collectionId`} component={collectionPages} /> 
-        
+        <Route exact path={`${match.path}`} 
+         component={CollectionsOverviewContainer}
+         
+         />
+        <Route
+          path={`${match.path}/:collectionId`}
+          component={CollectionPageContainer}
+        />
       </div>
-  ); 
-};
+    );
+  
+}
 
- export default ShopPage;
+
+
+const mapDispatchToProps = (dispatch) => ({
+ fetchCollectionsStart : () => dispatch(fetchCollectionsStart())
+});
+
+export default connect (null,mapDispatchToProps)(ShopPage);
